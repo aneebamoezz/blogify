@@ -29,13 +29,19 @@ app.use(checkForAuthenticationCookie('token'));
 app.use(express.static(path.resolve('./public')))
 
 app.get("/", async (req, res) => {
-  const allBlogs = await Blog.find({}).sort({'createdAt': -1});
-  res.render("home", { 
-    user: req.user, 
-    blogs: allBlogs
-  });
-}); 
+  try {
+    const allBlogs = await Blog.find({}).sort({ createdAt: -1 });
 
+    res.render("home", { 
+      user: req.user, 
+      blogs: allBlogs
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 app.use('/user', userRoute);
 app.use('/blog', blogRoute);
 
